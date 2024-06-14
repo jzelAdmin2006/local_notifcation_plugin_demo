@@ -383,6 +383,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return scheduledDate;
   }
 
+  Future<void> _cancelAllNotifications() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -478,6 +482,13 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               child: const Text('Schedule weekly Monday 10:00:00 am notification '
                   'in your local time zone',),
+            ),
+          ),Center(
+            child: ElevatedButton(
+              onPressed: () {
+                _cancelAllNotifications();
+              },
+              child: const Text('cancel all',),
             ),
           ),
         ],
