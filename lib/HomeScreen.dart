@@ -314,6 +314,75 @@ class _HomeScreenState extends State<HomeScreen> {
         number, 'big text title', 'silent body', notificationDetails);
   }
 
+  Future<void> _repeatNotification() async {
+    const AndroidNotificationDetails androidNotificationDetails =
+    AndroidNotificationDetails(
+        'repeating channel id', 'repeating channel name',
+        channelDescription: 'repeating description');
+    const NotificationDetails notificationDetails =
+    NotificationDetails(android: androidNotificationDetails);
+    await flutterLocalNotificationsPlugin.periodicallyShow(
+      number,
+      'repeating title',
+      'repeating body',
+      RepeatInterval.everyMinute,
+      notificationDetails,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
+  }
+
+  Future<void> _scheduleDailyTenAMNotification() async {
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        0,
+        'daily scheduled notification title',
+        'daily scheduled notification body',
+        _nextInstanceOfTenAM(),
+        const NotificationDetails(
+          android: AndroidNotificationDetails('daily notification channel id',
+              'daily notification channel name',
+              channelDescription: 'daily notification description'),
+        ),
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time);
+  }
+
+  Future<void> _scheduleWeeklyMondayTenAMNotification() async {
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        0,
+        'weekly scheduled notification title',
+        'weekly scheduled notification body',
+        _nextInstanceOfMondayTenAM(),
+        const NotificationDetails(
+          android: AndroidNotificationDetails('weekly notification channel id',
+              'weekly notification channel name',
+              channelDescription: 'weekly notificationdescription'),
+        ),
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime);
+  }
+
+  tz.TZDateTime _nextInstanceOfMondayTenAM() {
+    tz.TZDateTime scheduledDate = _nextInstanceOfTenAM();
+    while (scheduledDate.weekday != DateTime.monday) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+    return scheduledDate;
+  }
+
+  tz.TZDateTime _nextInstanceOfTenAM() {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate =
+    tz.TZDateTime(tz.local, now.year, now.month, now.day, 23);
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+    return scheduledDate;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -380,6 +449,35 @@ class _HomeScreenState extends State<HomeScreen> {
                 number++;
               },
               child: const Text("Big Text Notification"),
+            ),
+          ),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                _repeatNotification();
+                number++;
+              },
+              child: const Text("Every minute notification"),
+            ),
+          ),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                _scheduleDailyTenAMNotification();
+                number++;
+              },
+              child: const Text('Schedule daily 10:00:00 am notification in your '
+                  'local time zone'),
+            ),
+          ),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                _scheduleWeeklyMondayTenAMNotification();
+                number++;
+              },
+              child: const Text('Schedule weekly Monday 10:00:00 am notification '
+                  'in your local time zone',),
             ),
           ),
         ],
