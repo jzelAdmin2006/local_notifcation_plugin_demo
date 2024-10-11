@@ -1,4 +1,4 @@
-# local_notiifcation_plugin_demo
+# local_notifcation_plugin_demo
 
 A new Flutter project.
 
