@@ -20,34 +20,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initialize();
-    _isAndroidPermissionGranted();
     _requestPermissions();
   }
 
   Future initialize() async {
     var androidInitialize =
         const AndroidInitializationSettings('mipmap/ic_launcher');
-    //var iOSInitialize =  IOSInitializationSettings();
     var initializationsSettings = InitializationSettings(
         android: androidInitialize, iOS: const DarwinInitializationSettings());
-    // iOS: iOSInitialize);
     await flutterLocalNotificationsPlugin.initialize(initializationsSettings);
-  }
-
-  Future<void> _isAndroidPermissionGranted() async {
-    if (Platform.isAndroid) {
-      final bool granted = await flutterLocalNotificationsPlugin
-              .resolvePlatformSpecificImplementation<
-                  AndroidFlutterLocalNotificationsPlugin>()
-              ?.areNotificationsEnabled() ??
-          false;
-
-      setState(() {
-      });
-    }
   }
 
   Future<void> _requestPermissions() async {
@@ -73,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
           flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>();
 
-      final bool? grantedNotificationPermission =
           await androidImplementation?.requestNotificationsPermission();
       setState(() {
       });
