@@ -16,25 +16,18 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  int number = 1;
+  int notificationId = 1;
 
   @override
   void initState() {
     super.initState();
-    initialize();
-    _requestPermissions();
-  }
-
-  Future initialize() async {
-    var androidInitialize =
-        const AndroidInitializationSettings('mipmap/ic_launcher');
-    var initializationsSettings = InitializationSettings(
-        android: androidInitialize, iOS: const DarwinInitializationSettings());
-    await flutterLocalNotificationsPlugin.initialize(initializationsSettings);
+    flutterLocalNotificationsPlugin.initialize(const InitializationSettings(
+        android: AndroidInitializationSettings('mipmap/ic_launcher'), iOS: DarwinInitializationSettings()))
+        .then((_) => _requestPermissions());
   }
 
   Future<void> _requestPermissions() async {
-    if (Platform.isIOS || Platform.isMacOS) {
+    if (Platform.isIOS) {
       await flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<
               IOSFlutterLocalNotificationsPlugin>()
@@ -43,37 +36,20 @@ class _HomeScreenState extends State<HomeScreen> {
             badge: true,
             sound: true,
           );
-      await flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              MacOSFlutterLocalNotificationsPlugin>()
-          ?.requestPermissions(
-            alert: true,
-            badge: true,
-            sound: true,
-          );
     } else if (Platform.isAndroid) {
-      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
-          flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
-
-          await androidImplementation?.requestNotificationsPermission();
+          await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
       setState(() {
       });
     }
   }
 
   Future<void> _showNotification() async {
-    const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails('your channel id', 'your channel name',
-            channelDescription: 'your channel description',
-            importance: Importance.max,
-            priority: Priority.high,
-            ticker: 'ticker');
-    const NotificationDetails notificationDetails =
-        NotificationDetails(android: androidNotificationDetails);
     await flutterLocalNotificationsPlugin.show(
-        number, 'Test Title', 'This is Notification demo', notificationDetails,
-        payload: 'item x');
+        notificationId++, 'Test Title', 'This is Notification demo', const NotificationDetails(android: AndroidNotificationDetails('SwitchboxNotificationChannel', 'Switchbox Notification Channel',
+        channelDescription: 'Notification Channel for Switchbox',
+        importance: Importance.max,
+        priority: Priority.high)));
   }
 
   @override
@@ -88,7 +64,6 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ElevatedButton(
               onPressed: () {
                 _showNotification();
-                number++;
               },
               child: const Text("Simple Notification"),
             ),
