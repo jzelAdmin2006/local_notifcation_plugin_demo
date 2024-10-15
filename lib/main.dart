@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:local_notiifcation_plugin_demo/HomeScreen.dart';
 
-import 'notification_service.dart';
-
 void main() {
   runApp(const MyApp());
-  NotificationService().init();
 }
 
 class MyApp extends StatelessWidget {
