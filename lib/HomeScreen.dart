@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Center(
             child: ElevatedButton(
               onPressed: () {
-                NotificationService().setupInteractedMessage();
+                NotificationService().showNotification();
               },
               child: const Text("Simple Notification"),
             ),
